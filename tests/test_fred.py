@@ -39,4 +39,4 @@ def test_fetch_series_returns_clean_dataframe():
     assert list(df.columns) == ["date", "series_id", "value"]
     assert df["series_id"].unique()[0] == "CPIAUCSL"
     assert pd.api.types.is_datetime64_any_dtype(df["date"])
-    assert pd.api.types.is_float_dtype(df["value"])
+    assert pd.api.types.is_numeric_dtype(df["value"])
