@@ -21,10 +21,13 @@ def get_industrial_production(
     """Pull Industrial Production Index from FRED.
 
     Returns a DataFrame with columns:
-      date               — observation date
-      native_series_id   — "INDPRO"
-      value       — index level (2017=100)
-      ip_yoy      — year-over-year % change
-      ip_mom      — month-over-month % change
+      date              — observation date
+      signal_id         — "activity.industrial_production"
+      native_series_id  — "INDPRO"
+      value             — index level (2017=100)
+      frequency         — "M" (monthly)
+      source            — "fred"
+      ip_yoy            — year-over-year % change
+      ip_mom            — month-over-month % change
     """
     return fetch_signal(ACTIVITY_INDUSTRIAL_PRODUCTION, start=start, end=end, api_key=api_key)

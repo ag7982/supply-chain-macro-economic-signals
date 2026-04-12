@@ -24,10 +24,13 @@ def get_usd_index(
     commodity prices denominated in USD.
 
     Returns a DataFrame with columns:
-      date               — observation date
-      native_series_id   — "DTWEXBGS"
-      value       — index level (Jan 2006=100)
-      chg_1d      — 1-day % change
-      chg_30d     — 30-day % change
+      date              — observation date
+      signal_id         — "fx.usd_broad_nominal"
+      native_series_id  — "DTWEXBGS"
+      value             — index level (Jan 2006=100)
+      frequency         — "D" (daily)
+      source            — "fred"
+      chg_1d            — 1-day % change
+      chg_30d           — 30-day % change
     """
     return fetch_signal(FX_USD_BROAD_NOMINAL, start=start, end=end, api_key=api_key)

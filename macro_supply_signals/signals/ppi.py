@@ -24,10 +24,13 @@ def get_ppi(
     """Pull Producer Price Index (all commodities) from FRED.
 
     Returns a DataFrame with columns:
-      date               — observation date
-      native_series_id   — "PPIACO"
-      value       — index level (1982=100)
-      ppi_yoy     — year-over-year % change
-      ppi_mom     — month-over-month % change
+      date              — observation date
+      signal_id         — "inflation.ppi_all_commodities"
+      native_series_id  — "PPIACO"
+      value             — index level (1982=100)
+      frequency         — "M" (monthly)
+      source            — "fred"
+      ppi_yoy           — year-over-year % change
+      ppi_mom           — month-over-month % change
     """
     return fetch_signal(INFLATION_PPI_ALL_COMMODITIES, start=start, end=end, api_key=api_key)

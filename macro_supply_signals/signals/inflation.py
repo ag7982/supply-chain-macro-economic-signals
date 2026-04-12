@@ -25,10 +25,13 @@ def get_cpi(
     """Pull CPI data and attach derived inflation rate columns.
 
     Returns a DataFrame with columns:
-      date               — observation date
-      native_series_id   — "CPIAUCSL"
-      value       — raw index level
-      cpi_yoy     — year-over-year % change
-      cpi_mom     — month-over-month % change
+      date              — observation date
+      signal_id         — "inflation.cpi_headline"
+      native_series_id  — "CPIAUCSL"
+      value             — raw index level
+      frequency         — "M" (monthly)
+      source            — "fred"
+      cpi_yoy           — year-over-year % change
+      cpi_mom           — month-over-month % change
     """
     return fetch_signal(INFLATION_CPI_HEADLINE, start=start, end=end, api_key=api_key)
