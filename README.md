@@ -40,7 +40,7 @@ from macro_supply_signals.signals.inflation import get_cpi
 
 df = get_cpi(start="2020-01-01")
 print(df.tail())
-#         date series_id    value  cpi_yoy  cpi_mom
+#         date native_series_id    value  cpi_yoy  cpi_mom
 # 2025-03-01  CPIAUCSL  319.785   2.3820   0.0332
 # 2025-04-01  CPIAUCSL  320.302   2.3254   0.1617
 # ...
@@ -58,6 +58,17 @@ from macro_supply_signals.signals.energy import get_wti, get_brent
 from macro_supply_signals.signals.fx import get_usd_index
 ```
 
+### Pull by stable signal id (registry)
+
+All convenience functions delegate to a central catalog. You can call the same logic by id (for batch tooling or a future client API):
+
+```python
+from macro_supply_signals.catalog import fetch_signal, INFLATION_CPI_HEADLINE
+
+df = fetch_signal(INFLATION_CPI_HEADLINE, start="2020-01-01")
+# equivalent to get_cpi(start="2020-01-01")
+```
+
 ### End-to-end demo script
 
 Fetches CPI, prints a summary, and saves to `data/cpi.csv`:
@@ -70,6 +81,7 @@ python scripts/pull_cpi.py
 
 ```
 macro_supply_signals/
+├── catalog.py           # SIGNALS_BY_ID, fetch_signal(), stable signal id constants
 ├── sources/
 │   └── fred.py          # FREDClient — wraps the FRED REST API
 └── signals/
@@ -81,6 +93,7 @@ macro_supply_signals/
 scripts/
 └── pull_cpi.py          # demo pull
 tests/
+├── test_catalog.py      # registry and fetch_signal tests
 ├── test_fred.py         # FREDClient unit tests
 └── test_signals.py      # smoke tests for all signal functions
 ```
