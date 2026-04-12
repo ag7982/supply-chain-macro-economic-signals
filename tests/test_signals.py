@@ -59,7 +59,7 @@ def test_signal_returns_expected_columns(fn, obs, extra_cols):
         df = fn(api_key="test-key")
 
     assert isinstance(df, pd.DataFrame)
-    assert {"date", "series_id", "value", *extra_cols}.issubset(df.columns)
+    assert {"date", "native_series_id", "value", *extra_cols}.issubset(df.columns)
     assert pd.api.types.is_datetime64_any_dtype(df["date"])
     assert pd.api.types.is_numeric_dtype(df["value"])
     assert len(df) > 0

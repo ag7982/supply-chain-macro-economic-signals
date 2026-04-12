@@ -14,6 +14,9 @@ venv/
 # Data (raw pulls — regenerable)
 data/raw/
 
+# Local backlog (personal / scratch; not committed)
+docs/TICKETS.md
+
 # IDE
 .vscode/
 .idea/

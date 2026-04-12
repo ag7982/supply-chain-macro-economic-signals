@@ -7,7 +7,6 @@ Requires a free API key set in the FRED_API_KEY environment variable.
 from __future__ import annotations
 
 import os
-from datetime import date
 from typing import Optional
 
 import pandas as pd
@@ -44,7 +43,7 @@ class FREDClient:
             end: ISO date string "YYYY-MM-DD". Defaults to today.
 
         Returns:
-            DataFrame with columns: date (datetime64), series_id (str), value (float).
+            DataFrame with columns: date (datetime64), native_series_id (str), value (float).
             Missing / non-numeric observations (FRED uses "." as placeholder) are dropped.
         """
         params: dict = {
@@ -71,7 +70,7 @@ class FREDClient:
         df["date"] = pd.to_datetime(df["date"])
         df["value"] = pd.to_numeric(df["value"], errors="coerce")
         df = df.dropna(subset=["value"]).reset_index(drop=True)
-        df.insert(1, "series_id", series_id)
+        df.insert(1, "native_series_id", series_id)
 
         return df
 

@@ -89,7 +89,8 @@ This package exists to shrink that glue code and cognitive load—not to replace
 **Current codebase mapping:**
 
 - `macro_supply_signals/sources/fred.py` → **Source** (FRED).
-- `macro_supply_signals/signals/*.py` → Today: **catalog + transforms** inlined per module. **Target:** converge on a shared catalog registry to avoid duplication and enable `pull_panel`.
+- `macro_supply_signals/catalog.py` → **Catalog** (`SIGNALS_BY_ID`, `SignalSpec`, `fetch_signal`) and shared transform application; `signals/*.py` delegate from `get_*` to `fetch_signal`.
+- `macro_supply_signals/signals/*.py` → Thin **public convenience** wrappers. **Next:** add normalized columns (`signal_id`, `frequency`, …) per §5 and `pull_many` / panel alignment.
 
 ---
 
@@ -112,7 +113,7 @@ All **signal-level** functions SHOULD return a `DataFrame` with at least:
 - Named consistently per **family**: e.g. `*_yoy`, `*_mom` for monthly index levels; `chg_1d`, `chg_30d` for daily series.
 - Documented in catalog per signal; optional `include_derived: bool` on pull API.
 
-**Migration from 0.1.x:** Existing columns `series_id` align with `native_series_id`; add `signal_id` and `frequency` as the package matures. Deprecate `series_id` only in a minor/major release with a changelog.
+**Column naming:** FRED observation frames use `native_series_id` (not `series_id`). Add `signal_id` and `frequency` on the same rows as the schema matures.
 
 ---
 
