@@ -46,6 +46,18 @@ def _patch(obs: dict):
     )
 
 
+_SCHEMA_COLS = {"date", "signal_id", "native_series_id", "value", "frequency", "source"}
+
+_SIGNAL_META = {
+    get_cpi:                   ("inflation.cpi_headline",          "M", "CPIAUCSL"),
+    get_ppi:                   ("inflation.ppi_all_commodities",   "M", "PPIACO"),
+    get_industrial_production: ("activity.industrial_production",  "M", "INDPRO"),
+    get_wti:                   ("energy.crude_wti",                "D", "DCOILWTICO"),
+    get_brent:                 ("energy.crude_brent",              "D", "DCOILBRENTEU"),
+    get_usd_index:             ("fx.usd_broad_nominal",            "D", "DTWEXBGS"),
+}
+
+
 @pytest.mark.parametrize("fn,obs,extra_cols", [
     (get_cpi,                   _MONTHLY_OBS, ["cpi_yoy", "cpi_mom"]),
     (get_ppi,                   _MONTHLY_OBS, ["ppi_yoy", "ppi_mom"]),
@@ -59,7 +71,27 @@ def test_signal_returns_expected_columns(fn, obs, extra_cols):
         df = fn(api_key="test-key")
 
     assert isinstance(df, pd.DataFrame)
-    assert {"date", "native_series_id", "value", *extra_cols}.issubset(df.columns)
+    assert (_SCHEMA_COLS | set(extra_cols)).issubset(df.columns)
     assert pd.api.types.is_datetime64_any_dtype(df["date"])
     assert pd.api.types.is_numeric_dtype(df["value"])
     assert len(df) > 0
+
+
+@pytest.mark.parametrize("fn,obs", [
+    (get_cpi,                   _MONTHLY_OBS),
+    (get_ppi,                   _MONTHLY_OBS),
+    (get_industrial_production, _MONTHLY_OBS),
+    (get_wti,                   _DAILY_OBS),
+    (get_brent,                 _DAILY_OBS),
+    (get_usd_index,             _DAILY_OBS),
+])
+def test_signal_schema_values(fn, obs):
+    """Each row carries correct signal_id, frequency, source, and native_series_id."""
+    expected_signal_id, expected_freq, expected_native = _SIGNAL_META[fn]
+    with _patch(obs):
+        df = fn(api_key="test-key")
+
+    assert (df["signal_id"] == expected_signal_id).all()
+    assert (df["frequency"] == expected_freq).all()
+    assert (df["source"] == "fred").all()
+    assert (df["native_series_id"] == expected_native).all()

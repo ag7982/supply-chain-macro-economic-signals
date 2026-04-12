@@ -13,7 +13,12 @@ from typing import Optional
 
 import pandas as pd
 
-from macro_supply_signals.catalog import INFLATION_PPI_ALL_COMMODITIES, fetch_signal
+from macro_supply_signals.sources.fred import FREDClient
+
+_PPI_SERIES = "PPIACO"
+_SIGNAL_ID = "inflation.ppi_all_commodities"
+_FREQUENCY = "M"
+_SOURCE = "fred"
 
 
 def get_ppi(
@@ -24,10 +29,23 @@ def get_ppi(
     """Pull Producer Price Index (all commodities) from FRED.
 
     Returns a DataFrame with columns:
-      date               — observation date
-      native_series_id   — "PPIACO"
-      value       — index level (1982=100)
-      ppi_yoy     — year-over-year % change
-      ppi_mom     — month-over-month % change
+      date              — observation date
+      signal_id         — "inflation.ppi_all_commodities"
+      native_series_id  — "PPIACO"
+      value             — index level (1982=100)
+      frequency         — "M" (monthly)
+      source            — "fred"
+      ppi_yoy           — year-over-year % change
+      ppi_mom           — month-over-month % change
     """
-    return fetch_signal(INFLATION_PPI_ALL_COMMODITIES, start=start, end=end, api_key=api_key)
+    client = FREDClient(api_key=api_key)
+    df = client.fetch_series(_PPI_SERIES, start=start, end=end)
+
+    df = df.sort_values("date").reset_index(drop=True)
+    df["signal_id"] = _SIGNAL_ID
+    df["frequency"] = _FREQUENCY
+    df["source"] = _SOURCE
+    df["ppi_yoy"] = df["value"].pct_change(periods=12).mul(100).round(4)
+    df["ppi_mom"] = df["value"].pct_change(periods=1).mul(100).round(4)
+
+    return df
