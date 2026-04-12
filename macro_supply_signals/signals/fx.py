@@ -10,12 +10,7 @@ from typing import Optional
 
 import pandas as pd
 
-from macro_supply_signals.sources.fred import FREDClient
-
-_USD_INDEX_SERIES = "DTWEXBGS"
-_SIGNAL_ID = "fx.usd_broad_nominal"
-_FREQUENCY = "D"
-_SOURCE = "fred"
+from macro_supply_signals.catalog import FX_USD_BROAD_NOMINAL, fetch_signal
 
 
 def get_usd_index(
@@ -38,14 +33,4 @@ def get_usd_index(
       chg_1d            — 1-day % change
       chg_30d           — 30-day % change
     """
-    client = FREDClient(api_key=api_key)
-    df = client.fetch_series(_USD_INDEX_SERIES, start=start, end=end)
-
-    df = df.sort_values("date").reset_index(drop=True)
-    df["signal_id"] = _SIGNAL_ID
-    df["frequency"] = _FREQUENCY
-    df["source"] = _SOURCE
-    df["chg_1d"] = df["value"].pct_change(periods=1).mul(100).round(4)
-    df["chg_30d"] = df["value"].pct_change(periods=30).mul(100).round(4)
-
-    return df
+    return fetch_signal(FX_USD_BROAD_NOMINAL, start=start, end=end, api_key=api_key)

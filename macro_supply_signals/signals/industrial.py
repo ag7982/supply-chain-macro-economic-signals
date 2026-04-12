@@ -10,12 +10,7 @@ from typing import Optional
 
 import pandas as pd
 
-from macro_supply_signals.sources.fred import FREDClient
-
-_IP_SERIES = "INDPRO"
-_SIGNAL_ID = "activity.industrial_production"
-_FREQUENCY = "M"
-_SOURCE = "fred"
+from macro_supply_signals.catalog import ACTIVITY_INDUSTRIAL_PRODUCTION, fetch_signal
 
 
 def get_industrial_production(
@@ -35,14 +30,4 @@ def get_industrial_production(
       ip_yoy            — year-over-year % change
       ip_mom            — month-over-month % change
     """
-    client = FREDClient(api_key=api_key)
-    df = client.fetch_series(_IP_SERIES, start=start, end=end)
-
-    df = df.sort_values("date").reset_index(drop=True)
-    df["signal_id"] = _SIGNAL_ID
-    df["frequency"] = _FREQUENCY
-    df["source"] = _SOURCE
-    df["ip_yoy"] = df["value"].pct_change(periods=12).mul(100).round(4)
-    df["ip_mom"] = df["value"].pct_change(periods=1).mul(100).round(4)
-
-    return df
+    return fetch_signal(ACTIVITY_INDUSTRIAL_PRODUCTION, start=start, end=end, api_key=api_key)

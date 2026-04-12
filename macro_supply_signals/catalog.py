@@ -128,4 +128,8 @@ def fetch_signal(
 
     client = FREDClient(api_key=api_key)
     df = client.fetch_series(spec.native_series_id, start=start, end=end)
-    return _apply_transforms(spec, df)
+    df = _apply_transforms(spec, df)
+    df["signal_id"] = spec.signal_id
+    df["frequency"] = spec.frequency
+    df["source"] = spec.source
+    return df

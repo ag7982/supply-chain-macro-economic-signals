@@ -1,7 +1,7 @@
 """Energy price signals sourced from FRED.
 
 Primary series:
-  DCOILWTICO — Crude Oil Prices: West Texas Intermediate (WTI), daily
+  DCOILWTICO   — Crude Oil Prices: West Texas Intermediate (WTI), daily
   DCOILBRENTEU — Crude Oil Prices: Brent (Europe), daily
 """
 
@@ -11,12 +11,7 @@ from typing import Optional
 
 import pandas as pd
 
-from macro_supply_signals.sources.fred import FREDClient
-
-_WTI_SERIES = "DCOILWTICO"
-_BRENT_SERIES = "DCOILBRENTEU"
-_FREQUENCY = "D"
-_SOURCE = "fred"
+from macro_supply_signals.catalog import ENERGY_CRUDE_BRENT, ENERGY_CRUDE_WTI, fetch_signal
 
 
 def get_wti(
@@ -36,17 +31,7 @@ def get_wti(
       chg_1d            — 1-day % change
       chg_30d           — 30-day % change (approx 1 month)
     """
-    client = FREDClient(api_key=api_key)
-    df = client.fetch_series(_WTI_SERIES, start=start, end=end)
-
-    df = df.sort_values("date").reset_index(drop=True)
-    df["signal_id"] = "energy.crude_wti"
-    df["frequency"] = _FREQUENCY
-    df["source"] = _SOURCE
-    df["chg_1d"] = df["value"].pct_change(periods=1).mul(100).round(4)
-    df["chg_30d"] = df["value"].pct_change(periods=30).mul(100).round(4)
-
-    return df
+    return fetch_signal(ENERGY_CRUDE_WTI, start=start, end=end, api_key=api_key)
 
 
 def get_brent(
@@ -57,15 +42,6 @@ def get_brent(
     """Pull Brent crude oil daily prices.
 
     Returns a DataFrame with columns:
-<<<<<<< HEAD
-      date               — observation date
-      native_series_id   — "DCOILBRENTEU"
-      value       — price in USD per barrel
-      chg_1d      — 1-day % change
-      chg_30d     — 30-day % change
-    """
-    return fetch_signal(ENERGY_CRUDE_BRENT, start=start, end=end, api_key=api_key)
-=======
       date              — observation date
       signal_id         — "energy.crude_brent"
       native_series_id  — "DCOILBRENTEU"
@@ -75,15 +51,4 @@ def get_brent(
       chg_1d            — 1-day % change
       chg_30d           — 30-day % change
     """
-    client = FREDClient(api_key=api_key)
-    df = client.fetch_series(_BRENT_SERIES, start=start, end=end)
-
-    df = df.sort_values("date").reset_index(drop=True)
-    df["signal_id"] = "energy.crude_brent"
-    df["frequency"] = _FREQUENCY
-    df["source"] = _SOURCE
-    df["chg_1d"] = df["value"].pct_change(periods=1).mul(100).round(4)
-    df["chg_30d"] = df["value"].pct_change(periods=30).mul(100).round(4)
-
-    return df
->>>>>>> 355b049 (normalise all six get_* functions)
+    return fetch_signal(ENERGY_CRUDE_BRENT, start=start, end=end, api_key=api_key)

@@ -14,12 +14,7 @@ from typing import Optional
 
 import pandas as pd
 
-from macro_supply_signals.sources.fred import FREDClient
-
-_CPI_SERIES = "CPIAUCSL"
-_SIGNAL_ID = "inflation.cpi_headline"
-_FREQUENCY = "M"
-_SOURCE = "fred"
+from macro_supply_signals.catalog import INFLATION_CPI_HEADLINE, fetch_signal
 
 
 def get_cpi(
@@ -39,14 +34,4 @@ def get_cpi(
       cpi_yoy           — year-over-year % change
       cpi_mom           — month-over-month % change
     """
-    client = FREDClient(api_key=api_key)
-    df = client.fetch_series(_CPI_SERIES, start=start, end=end)
-
-    df = df.sort_values("date").reset_index(drop=True)
-    df["signal_id"] = _SIGNAL_ID
-    df["frequency"] = _FREQUENCY
-    df["source"] = _SOURCE
-    df["cpi_yoy"] = df["value"].pct_change(periods=12).mul(100).round(4)
-    df["cpi_mom"] = df["value"].pct_change(periods=1).mul(100).round(4)
-
-    return df
+    return fetch_signal(INFLATION_CPI_HEADLINE, start=start, end=end, api_key=api_key)
