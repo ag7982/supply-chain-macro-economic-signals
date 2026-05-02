@@ -1,6 +1,9 @@
 # macro-supply-signals
 
-Pull and normalise macro-economic indicators relevant to supply-chain analysis. All signals are sourced from [FRED (Federal Reserve Economic Data)](https://fred.stlouisfed.org/) and returned as clean, consistently-schemaed pandas DataFrames.
+[![CI](https://github.com/ag7982/macro-supply-signals/actions/workflows/ci.yml/badge.svg)](https://github.com/ag7982/macro-supply-signals/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+Pull and normalise macro-economic indicators relevant to supply-chain analysis. All signals are sourced from [FRED (Federal Reserve Economic Data)](https://fred.stlouisfed.org/) and returned as clean pandas DataFrames.
 
 ## Signals
 
@@ -151,26 +154,26 @@ notebooks/
 scripts/
 └── pull_cpi.py          # demo script — fetches CPI, prints summary, saves to data/cpi.csv
 tests/
-├── test_catalog.py
-├── test_client.py
-├── test_fred.py
-└── test_signals.py
+├── test_catalog.py      # registry and fetch_signal tests
+├── test_client.py       # SignalClient integration tests
+├── test_fred.py         # FREDClient unit tests
+└── test_signals.py      # smoke tests for all signal functions
 ```
 
 ## Running tests
 
 ```bash
-pytest
+pytest --cov=macro_supply_signals --cov-report=term-missing
 ```
 
 All tests mock the FRED HTTP layer — no API key required.
 
 ## Roadmap
 
-- [ ] CI workflow (lint + tests on push/PR)
-- [ ] PyPI publish (`pyproject.toml` metadata, trusted publishing)
-- [ ] Transform golden tests (fixed fixtures for YoY/MoM edge cases)
-- [ ] Optional live FRED integration test (`pytest -m fred_live`)
-- [ ] Baltic Dry Index / freight proxy — first non-FRED source
-- [ ] Caching layer (disk/memory, configurable TTL)
-- [ ] CLI entry point (`macro-supply-signals pull …`)
+- [x] CI pipeline (GitHub Actions, Python 3.9 + 3.12)
+- [x] MIT license
+- [x] `SignalClient` with `pull()` and `pull_many()` (#7)
+- [x] Standard columns + `retrieved_at` + `include_derived`
+- [ ] Baltic Dry Index (shipping) — requires scraping (#11)
+- [ ] PyPI publish (#5)
+- [ ] Scheduled pulls / incremental updates
