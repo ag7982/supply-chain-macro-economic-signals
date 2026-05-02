@@ -7,8 +7,8 @@ Use :func:`fetch_signal` for programmatic pulls; convenience ``get_*`` functions
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Dict, Final, Literal, Optional
+from dataclasses import dataclass, field
+from typing import Dict, Final, List, Literal, Optional
 
 import pandas as pd
 
@@ -35,6 +35,12 @@ class SignalSpec:
     source: str
     frequency: str
     transform: TransformKind
+    title: str = ""
+    description: str = ""
+    units: str = ""
+    seasonal_adjustment: str = ""
+    supply_chain_tags: List[str] = field(default_factory=list)
+    downstream_join_hint: str = ""
     yoy_column: Optional[str] = None
     mom_column: Optional[str] = None
 
@@ -46,6 +52,16 @@ SIGNALS_BY_ID: Dict[str, SignalSpec] = {
         source="fred",
         frequency="M",
         transform="monthly_pct",
+        title="CPI — Consumer Price Index (Headline)",
+        description=(
+            "Measures the average change in prices paid by urban consumers for a basket of goods "
+            "and services. Rising CPI signals input-cost pressure that flows through to landed costs, "
+            "contract renegotiations, and consumer demand erosion."
+        ),
+        units="Index (1982-84=100)",
+        seasonal_adjustment="Seasonally adjusted",
+        supply_chain_tags=["input_costs", "demand", "contract_pricing"],
+        downstream_join_hint="Monthly series; align to month-end for panel joins with daily signals.",
         yoy_column="cpi_yoy",
         mom_column="cpi_mom",
     ),
@@ -55,6 +71,16 @@ SIGNALS_BY_ID: Dict[str, SignalSpec] = {
         source="fred",
         frequency="M",
         transform="monthly_pct",
+        title="PPI — Producer Price Index (All Commodities)",
+        description=(
+            "Tracks average selling prices received by domestic producers for their output. "
+            "PPI leads CPI and is a direct proxy for upstream input-cost pressure on manufacturers, "
+            "distributors, and logistics providers."
+        ),
+        units="Index (1982=100)",
+        seasonal_adjustment="Not seasonally adjusted",
+        supply_chain_tags=["input_costs", "procurement", "manufacturing"],
+        downstream_join_hint="Monthly series; align to month-end for panel joins with daily signals.",
         yoy_column="ppi_yoy",
         mom_column="ppi_mom",
     ),
@@ -64,6 +90,16 @@ SIGNALS_BY_ID: Dict[str, SignalSpec] = {
         source="fred",
         frequency="M",
         transform="monthly_pct",
+        title="Industrial Production Index",
+        description=(
+            "Measures real output of manufacturing, mining, and electric and gas utilities. "
+            "A leading indicator of factory utilization and capacity constraints; "
+            "sustained contraction signals falling demand and potential supplier fragility."
+        ),
+        units="Index (2017=100)",
+        seasonal_adjustment="Seasonally adjusted",
+        supply_chain_tags=["capacity", "manufacturing", "demand"],
+        downstream_join_hint="Monthly series; align to month-end for panel joins with daily signals.",
         yoy_column="ip_yoy",
         mom_column="ip_mom",
     ),
@@ -73,6 +109,19 @@ SIGNALS_BY_ID: Dict[str, SignalSpec] = {
         source="fred",
         frequency="D",
         transform="daily_pct",
+        title="WTI Crude Oil Price",
+        description=(
+            "West Texas Intermediate spot price — the U.S. benchmark for crude oil. "
+            "Directly drives fuel surcharges, petrochemical feedstock costs, and air-freight rates; "
+            "sharp moves typically reprice transportation contracts within one to two billing cycles."
+        ),
+        units="USD per barrel",
+        seasonal_adjustment="Not seasonally adjusted",
+        supply_chain_tags=["energy", "transportation_cost", "input_costs"],
+        downstream_join_hint=(
+            "Daily series with occasional missing values (weekends, holidays). "
+            "Use as-of merge or resample to month-end last for monthly panel joins."
+        ),
     ),
     ENERGY_CRUDE_BRENT: SignalSpec(
         signal_id=ENERGY_CRUDE_BRENT,
@@ -80,6 +129,19 @@ SIGNALS_BY_ID: Dict[str, SignalSpec] = {
         source="fred",
         frequency="D",
         transform="daily_pct",
+        title="Brent Crude Oil Price",
+        description=(
+            "North Sea Brent spot price — the global benchmark for crude oil and a key input "
+            "to bunker fuel pricing. Tracks WTI closely but diverges during regional supply shocks; "
+            "most relevant for ocean-freight and European/Asian sourcing cost models."
+        ),
+        units="USD per barrel",
+        seasonal_adjustment="Not seasonally adjusted",
+        supply_chain_tags=["energy", "transportation_cost", "ocean_freight", "input_costs"],
+        downstream_join_hint=(
+            "Daily series with occasional missing values (weekends, holidays). "
+            "Use as-of merge or resample to month-end last for monthly panel joins."
+        ),
     ),
     FX_USD_BROAD_NOMINAL: SignalSpec(
         signal_id=FX_USD_BROAD_NOMINAL,
@@ -87,6 +149,19 @@ SIGNALS_BY_ID: Dict[str, SignalSpec] = {
         source="fred",
         frequency="D",
         transform="daily_pct",
+        title="USD Broad Nominal Effective Exchange Rate",
+        description=(
+            "Trade-weighted average of the U.S. dollar against a broad basket of foreign currencies. "
+            "A stronger dollar cheapens imports and raises the USD cost of exports; "
+            "directly affects landed cost calculations for internationally sourced goods."
+        ),
+        units="Index (Jan 2006=100)",
+        seasonal_adjustment="Not seasonally adjusted",
+        supply_chain_tags=["trade_exposure", "fx", "import_costs", "export_competitiveness"],
+        downstream_join_hint=(
+            "Daily series with occasional missing values (weekends, holidays). "
+            "Use as-of merge or resample to month-end last for monthly panel joins."
+        ),
     ),
 }
 
