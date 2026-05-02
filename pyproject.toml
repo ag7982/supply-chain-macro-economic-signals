@@ -1,23 +1,47 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "macro-supply-signals"
 version = "0.1.0"
 description = "Pull and normalise macro indicators relevant to supply-chain analysis"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.9"
+authors = [
+    { name = "ag7982", email = "ag7982@users.noreply.github.com" },
+]
+keywords = ["macroeconomics", "supply-chain", "fred", "cpi", "ppi", "energy", "fx"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Office/Business :: Financial",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
 dependencies = [
     "pandas>=2.2",
     "requests>=2.31",
-    "python-dotenv>=1.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/ag7982/supply-chain-macro-economic-signals"
+Repository = "https://github.com/ag7982/supply-chain-macro-economic-signals"
+Issues = "https://github.com/ag7982/supply-chain-macro-economic-signals/issues"
 
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0",
     "pytest-cov",
     "ruff",
+    "build",
 ]
 notebook = [
     "matplotlib>=3.7",
@@ -26,6 +50,9 @@ notebook = [
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["macro_supply_signals*"]
+
+[tool.setuptools.package-data]
+macro_supply_signals = ["py.typed"]
 
 [tool.ruff]
 line-length = 100

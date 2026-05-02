@@ -13,11 +13,6 @@ from typing import Optional
 
 import pandas as pd
 import requests
-from pathlib import Path
-
-from dotenv import load_dotenv
-
-load_dotenv(Path(__file__).parent.parent.parent / ".env")
 
 _BASE_URL = "https://api.stlouisfed.org/fred"
 _DEFAULT_TIMEOUT = 30  # seconds
@@ -30,7 +25,7 @@ class FREDClient:
         self.api_key = api_key or os.environ.get("FRED_API_KEY")
         if not self.api_key:
             raise ValueError(
-                "FRED_API_KEY not found. Set it in your .env file or pass api_key= explicitly."
+                "FRED_API_KEY not found. Set the environment variable or pass api_key= explicitly."
             )
 
     def fetch_series(
@@ -81,17 +76,3 @@ class FREDClient:
 
         return df
 
-    def fetch_series_info(self, series_id: str) -> dict:
-        """Return metadata dict for a FRED series (title, units, frequency, etc.)."""
-        params = {
-            "series_id": series_id,
-            "api_key": self.api_key,
-            "file_type": "json",
-        }
-        response = requests.get(
-            f"{_BASE_URL}/series",
-            params=params,
-            timeout=_DEFAULT_TIMEOUT,
-        )
-        response.raise_for_status()
-        return response.json().get("seriess", [{}])[0]
