@@ -18,6 +18,7 @@ def get_wti(
     start: Optional[str] = "2000-01-01",
     end: Optional[str] = None,
     api_key: Optional[str] = None,
+    include_derived: bool = True,
 ) -> pd.DataFrame:
     """Pull WTI crude oil daily prices.
 
@@ -31,13 +32,14 @@ def get_wti(
       chg_1d            — 1-day % change
       chg_30d           — 30-day % change (approx 1 month)
     """
-    return fetch_signal(ENERGY_CRUDE_WTI, start=start, end=end, api_key=api_key)
+    return fetch_signal(ENERGY_CRUDE_WTI, start=start, end=end, api_key=api_key, include_derived=include_derived)
 
 
 def get_brent(
     start: Optional[str] = "2000-01-01",
     end: Optional[str] = None,
     api_key: Optional[str] = None,
+    include_derived: bool = True,
 ) -> pd.DataFrame:
     """Pull Brent crude oil daily prices.
 
@@ -48,7 +50,7 @@ def get_brent(
       value             — price in USD per barrel
       frequency         — "D" (daily)
       source            — "fred"
-      chg_1d            — 1-day % change
-      chg_30d           — 30-day % change
+      chg_1d            — 1-day % change (omitted if include_derived=False)
+      chg_30d           — 30-day % change (omitted if include_derived=False)
     """
-    return fetch_signal(ENERGY_CRUDE_BRENT, start=start, end=end, api_key=api_key)
+    return fetch_signal(ENERGY_CRUDE_BRENT, start=start, end=end, api_key=api_key, include_derived=include_derived)

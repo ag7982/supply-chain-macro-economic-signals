@@ -17,6 +17,7 @@ def get_industrial_production(
     start: Optional[str] = "2000-01-01",
     end: Optional[str] = None,
     api_key: Optional[str] = None,
+    include_derived: bool = True,
 ) -> pd.DataFrame:
     """Pull Industrial Production Index from FRED.
 
@@ -30,4 +31,4 @@ def get_industrial_production(
       ip_yoy            — year-over-year % change
       ip_mom            — month-over-month % change
     """
-    return fetch_signal(ACTIVITY_INDUSTRIAL_PRODUCTION, start=start, end=end, api_key=api_key)
+    return fetch_signal(ACTIVITY_INDUSTRIAL_PRODUCTION, start=start, end=end, api_key=api_key, include_derived=include_derived)

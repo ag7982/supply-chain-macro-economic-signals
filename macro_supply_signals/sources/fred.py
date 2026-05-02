@@ -7,6 +7,8 @@ Requires a free API key set in the FRED_API_KEY environment variable.
 from __future__ import annotations
 
 import os
+from datetime import timezone
+from datetime import datetime
 from typing import Optional
 
 import pandas as pd
@@ -58,6 +60,8 @@ class FREDClient:
         if end:
             params["observation_end"] = end
 
+        fetched_at = datetime.now(timezone.utc)
+
         response = requests.get(
             f"{_BASE_URL}/series/observations",
             params=params,
@@ -73,6 +77,7 @@ class FREDClient:
         df["value"] = pd.to_numeric(df["value"], errors="coerce")
         df = df.dropna(subset=["value"]).reset_index(drop=True)
         df.insert(1, "native_series_id", series_id)
+        df["retrieved_at"] = fetched_at
 
         return df
 
