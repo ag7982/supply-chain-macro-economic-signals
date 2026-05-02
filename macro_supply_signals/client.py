@@ -51,12 +51,14 @@ class SignalClient:
         signal_id: str,
         start: Optional[str] = "2000-01-01",
         end: Optional[str] = None,
+        include_derived: bool = True,
     ) -> pd.DataFrame:
         """Pull a single signal by its stable id.
 
         Returns the same DataFrame as the matching ``get_*`` convenience function.
+        Pass ``include_derived=False`` for a slim frame with only schema columns.
         """
-        return fetch_signal(signal_id, start=start, end=end, api_key=self._api_key)
+        return fetch_signal(signal_id, start=start, end=end, api_key=self._api_key, include_derived=include_derived)
 
     def pull_many(
         self,
@@ -64,6 +66,7 @@ class SignalClient:
         start: Optional[str] = "2000-01-01",
         end: Optional[str] = None,
         align: Optional[AlignPolicy] = None,
+        include_derived: bool = True,
     ) -> Union[Dict[str, pd.DataFrame], pd.DataFrame]:
         """Pull multiple signals.
 
@@ -91,7 +94,7 @@ class SignalClient:
                 f"Unsupported align policy: {align!r}. Supported values: 'month_end'."
             )
 
-        frames = {sid: self.pull(sid, start=start, end=end) for sid in signal_ids}
+        frames = {sid: self.pull(sid, start=start, end=end, include_derived=include_derived) for sid in signal_ids}
 
         if align is None:
             return frames

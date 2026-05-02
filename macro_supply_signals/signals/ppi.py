@@ -20,6 +20,7 @@ def get_ppi(
     start: Optional[str] = "2000-01-01",
     end: Optional[str] = None,
     api_key: Optional[str] = None,
+    include_derived: bool = True,
 ) -> pd.DataFrame:
     """Pull Producer Price Index (all commodities) from FRED.
 
@@ -33,4 +34,4 @@ def get_ppi(
       ppi_yoy           — year-over-year % change
       ppi_mom           — month-over-month % change
     """
-    return fetch_signal(INFLATION_PPI_ALL_COMMODITIES, start=start, end=end, api_key=api_key)
+    return fetch_signal(INFLATION_PPI_ALL_COMMODITIES, start=start, end=end, api_key=api_key, include_derived=include_derived)

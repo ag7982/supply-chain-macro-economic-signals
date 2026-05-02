@@ -166,16 +166,20 @@ SIGNALS_BY_ID: Dict[str, SignalSpec] = {
 }
 
 
-def _apply_transforms(spec: SignalSpec, df: pd.DataFrame) -> pd.DataFrame:
+def _apply_transforms(
+    spec: SignalSpec, df: pd.DataFrame, include_derived: bool = True
+) -> pd.DataFrame:
     df = df.sort_values("date").reset_index(drop=True)
     if spec.transform == "monthly_pct":
         if spec.yoy_column is None or spec.mom_column is None:
             raise ValueError(f"monthly_pct signal {spec.signal_id!r} needs yoy_column and mom_column")
-        df[spec.yoy_column] = df["value"].pct_change(periods=12).mul(100).round(4)
-        df[spec.mom_column] = df["value"].pct_change(periods=1).mul(100).round(4)
+        if include_derived:
+            df[spec.yoy_column] = df["value"].pct_change(periods=12).mul(100).round(4)
+            df[spec.mom_column] = df["value"].pct_change(periods=1).mul(100).round(4)
     elif spec.transform == "daily_pct":
-        df["chg_1d"] = df["value"].pct_change(periods=1).mul(100).round(4)
-        df["chg_30d"] = df["value"].pct_change(periods=30).mul(100).round(4)
+        if include_derived:
+            df["chg_1d"] = df["value"].pct_change(periods=1).mul(100).round(4)
+            df["chg_30d"] = df["value"].pct_change(periods=30).mul(100).round(4)
     else:
         raise ValueError(f"Unknown transform: {spec.transform!r}")
     return df
@@ -186,6 +190,7 @@ def fetch_signal(
     start: Optional[str] = "2000-01-01",
     end: Optional[str] = None,
     api_key: Optional[str] = None,
+    include_derived: bool = True,
 ) -> pd.DataFrame:
     """Pull one signal by logical id and return the same DataFrame shape as the matching ``get_*``.
 
@@ -203,7 +208,7 @@ def fetch_signal(
 
     client = FREDClient(api_key=api_key)
     df = client.fetch_series(spec.native_series_id, start=start, end=end)
-    df = _apply_transforms(spec, df)
+    df = _apply_transforms(spec, df, include_derived=include_derived)
     df["signal_id"] = spec.signal_id
     df["frequency"] = spec.frequency
     df["source"] = spec.source

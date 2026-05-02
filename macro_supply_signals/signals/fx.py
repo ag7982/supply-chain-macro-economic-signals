@@ -17,6 +17,7 @@ def get_usd_index(
     start: Optional[str] = "2000-01-01",
     end: Optional[str] = None,
     api_key: Optional[str] = None,
+    include_derived: bool = True,
 ) -> pd.DataFrame:
     """Pull the nominal broad USD index from FRED.
 
@@ -33,4 +34,4 @@ def get_usd_index(
       chg_1d            — 1-day % change
       chg_30d           — 30-day % change
     """
-    return fetch_signal(FX_USD_BROAD_NOMINAL, start=start, end=end, api_key=api_key)
+    return fetch_signal(FX_USD_BROAD_NOMINAL, start=start, end=end, api_key=api_key, include_derived=include_derived)
