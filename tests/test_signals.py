@@ -95,3 +95,30 @@ def test_signal_schema_values(fn, obs):
     assert (df["frequency"] == expected_freq).all()
     assert (df["source"] == "fred").all()
     assert (df["native_series_id"] == expected_native).all()
+
+
+@pytest.mark.parametrize("fn,obs", [
+    (get_cpi,                   _MONTHLY_OBS),
+    (get_ppi,                   _MONTHLY_OBS),
+    (get_industrial_production, _MONTHLY_OBS),
+    (get_wti,                   _DAILY_OBS),
+    (get_brent,                 _DAILY_OBS),
+    (get_usd_index,             _DAILY_OBS),
+])
+def test_include_derived_false_omits_derived_columns(fn, obs):
+    with _patch(obs):
+        df = fn(api_key="test-key", include_derived=False)
+    derived = {"cpi_yoy", "cpi_mom", "ppi_yoy", "ppi_mom", "ip_yoy", "ip_mom", "chg_1d", "chg_30d"}
+    assert derived.isdisjoint(df.columns)
+    assert "value" in df.columns
+
+
+@pytest.mark.parametrize("fn,obs", [
+    (get_cpi,   _MONTHLY_OBS),
+    (get_wti,   _DAILY_OBS),
+])
+def test_retrieved_at_is_utc_aware(fn, obs):
+    with _patch(obs):
+        df = fn(api_key="test-key")
+    assert "retrieved_at" in df.columns
+    assert df["retrieved_at"].iloc[0].tzinfo is not None

@@ -36,7 +36,8 @@ def test_fetch_series_returns_clean_dataframe():
 
     # Missing "." row should be dropped
     assert len(df) == 3
-    assert list(df.columns) == ["date", "native_series_id", "value"]
+    assert list(df.columns) == ["date", "native_series_id", "value", "retrieved_at"]
     assert df["native_series_id"].unique()[0] == "CPIAUCSL"
     assert pd.api.types.is_datetime64_any_dtype(df["date"])
     assert pd.api.types.is_numeric_dtype(df["value"])
+    assert df["retrieved_at"].iloc[0].tzinfo is not None  # UTC-aware
