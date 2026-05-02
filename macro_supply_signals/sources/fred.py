@@ -11,9 +11,11 @@ from typing import Optional
 
 import pandas as pd
 import requests
+from pathlib import Path
+
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(Path(__file__).parent.parent.parent / ".env")
 
 _BASE_URL = "https://api.stlouisfed.org/fred"
 _DEFAULT_TIMEOUT = 30  # seconds

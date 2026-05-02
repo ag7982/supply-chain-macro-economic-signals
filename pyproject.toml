@@ -19,6 +19,9 @@ dev = [
     "pytest-cov",
     "ruff",
 ]
+notebook = [
+    "matplotlib>=3.7",
+]
 
 [tool.setuptools.packages.find]
 where = ["."]
