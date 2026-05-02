@@ -1,5 +1,8 @@
 # macro-supply-signals
 
+[![CI](https://github.com/ag7982/macro-supply-signals/actions/workflows/ci.yml/badge.svg)](https://github.com/ag7982/macro-supply-signals/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Pull and normalise macro-economic indicators relevant to supply-chain analysis. All signals are sourced from [FRED (Federal Reserve Economic Data)](https://fred.stlouisfed.org/) and returned as clean pandas DataFrames.
 
 ## Signals
@@ -94,6 +97,7 @@ scripts/
 └── pull_cpi.py          # demo pull
 tests/
 ├── test_catalog.py      # registry and fetch_signal tests
+├── test_client.py       # SignalClient integration tests
 ├── test_fred.py         # FREDClient unit tests
 └── test_signals.py      # smoke tests for all signal functions
 ```
@@ -101,12 +105,16 @@ tests/
 ## Running tests
 
 ```bash
-pytest
+pytest --cov=macro_supply_signals --cov-report=term-missing
 ```
 
 ## Roadmap
 
-- [ ] Baltic Dry Index (shipping) — requires scraping
-- [ ] Combined `pull_all.py` script across all signals
-- [ ] Normalised output schema across signal types
+- [x] CI pipeline (GitHub Actions, Python 3.9 + 3.12)
+- [x] MIT license
+- [x] `SignalClient` with `pull()` and `pull_many()` (#7)
+- [ ] Standard columns + `retrieved_at` + `include_derived` (#6) — in progress
+- [ ] Baltic Dry Index (shipping) — requires scraping (#11)
+- [ ] Combined `pull_all.py` script across all signals (#9)
+- [ ] PyPI publish (#5)
 - [ ] Scheduled pulls / incremental updates
