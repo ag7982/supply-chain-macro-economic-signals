@@ -17,6 +17,11 @@ data/raw/
 # Local backlog (personal / scratch; not committed)
 docs/TICKETS.md
 
+# JS artifacts (not part of this project)
+node_modules/
+package.json
+package-lock.json
+
 # IDE
 .vscode/
 .idea/
